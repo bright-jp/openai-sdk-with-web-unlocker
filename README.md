@@ -1,6 +1,6 @@
 # 高パフォーマンスのために OpenAI Agents SDK を Web Unlocker と統合する方法
 
-[![Bright Data Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.jp/)
+[![Bright Data Promo](https://github.com/bright-jp/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.jp/)
 
 本ガイドでは、OpenAI の Agents SDK と Web Unlocker API を組み合わせて、Webサイトからデータを取得・処理できる堅牢な AI エージェントを Python で作成する方法を解説します。
 
@@ -91,7 +91,7 @@ python -m venv venv
 
 `openai-sdk-agent` ディレクトリ内に、`agent.py` という名前の新しい Python ファイルを作成します。ディレクトリ構成は次のようになります。
 
-![The file structure of the AI agent project](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-file-structure-of-the-AI-agent-project.png)
+![The file structure of the AI agent project](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/The-file-structure-of-the-AI-agent-project.png)
 
 現時点では `scraper.py` は空の Python スクリプトですが、まもなく必要な AI エージェントロジックが含まれるようになります。
 
@@ -146,7 +146,7 @@ if __name__ == "__main__":
 
 プロジェクトディレクトリに `.env` ファイルを作成します。
 
-![Adding a .env file to your project](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Adding-a-.env-file-to-your-project.png)
+![Adding a .env file to your project](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/Adding-a-.env-file-to-your-project.png)
 
 このファイルには、API キーやシークレットトークンなどの環境変数を保存します。`.env` ファイルから環境変数を読み込むには、`dotenv` パッケージの `load_dotenv()` を使用します。
 
@@ -188,15 +188,15 @@ OPENAI_API_KEY="<YOUR_OPENAI_KEY>"
 
 Bright Data の「User Dashboard」ページで、「Get proxy products」オプションを選択します。
 
-![Clicking the "Get proxy products" option](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Clicking-the-Get-proxy-products-option.png)
+![Clicking the "Get proxy products" option](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/Clicking-the-Get-proxy-products-option.png)
 
 製品テーブルで「unblocker」とラベル付けされた行を見つけ、クリックします。
 
-![Clicking the "unblocker" row](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Clicking-the-unblocker-row.png)
+![Clicking the "unblocker" row](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/Clicking-the-unblocker-row.png)
 
 「unlocker」ページで、クリップボードアイコンを使って API トークンをコピーします。
 
-![Copying the API token](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Copying-the-API-token.png)
+![Copying the API token](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/Copying-the-API-token.png)
 
 また、右上のトグルが「On」になっていることを確認し、Web Unlocker 製品がアクティブであることを確認してください。
 
@@ -537,15 +537,15 @@ python agent.py
 
 例えば、[Bright Data の AI services hub](https://brightdata.jp/ai) のコンテンツを要約したいとします。次のようにリクエストを入力してください。
 
-![The input to get a summary of Bright Data's AI services](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-input-to-get-a-summary-of-Bright-Datas-AI-services.png)
+![The input to get a summary of Bright Data's AI services](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/The-input-to-get-a-summary-of-Bright-Datas-AI-services.png)
 
 受け取る JSON 形式の結果は次のとおりです。
 
-![The summary returned by your AI agent](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-summary-returned-by-your-AI-agent.png)
+![The summary returned by your AI agent](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/The-summary-returned-by-your-AI-agent.png)
 
 次に、[PS5 listing](https://www.amazon.com/PlayStation%C2%AE5-console-slim-PlayStation-5/dp/B0CL61F39H/) のような Amazon の商品ページから商品データを抽出したいと想像してください。
 
-![The Amazon PS5 page](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-Amazon-PS5-page.png)
+![The Amazon PS5 page](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/The-Amazon-PS5-page.png)
 
 通常であれば、[Amazon の CAPTCHA とアンチボットシステム](https://brightdata.jp/blog/web-data/bypass-amazon-captcha) によってリクエストがブロックされるはずです。Web Unlocker API を使えば、AI エージェントはブロックされることなくページにアクセスして解析できます。
 
@@ -565,7 +565,7 @@ python agent.py
 
 最後に、[Yahoo News の記事](https://www.yahoo.com/news/pope-francis-dies-88-080859417.html) から構造化されたニュース情報を取得したいとします。
 
-![The target Yahoo News article](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-target-Yahoo-News-article.png)
+![The target Yahoo News article](https://github.com/bright-jp/openai-sdk-with-web-unlocker/blob/main/images/The-target-Yahoo-News-article.png)
 
 次の入力で実行できます。
 
