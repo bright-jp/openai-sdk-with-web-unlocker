@@ -1,129 +1,129 @@
-# How to integrate OpenAI Agents SDK with a Web Unlocker for High Performance
+# 高パフォーマンスのために OpenAI Agents SDK を Web Unlocker と統合する方法
 
-[![Bright Data Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.com/)
+[![Bright Data Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.jp/)
 
-This guide explains how to create robust AI agents in Python by combining OpenAI's Agents SDK with Web Unlocker API to retrieve and process data from websites.
+本ガイドでは、OpenAI の Agents SDK と Web Unlocker API を組み合わせて、Webサイトからデータを取得・処理できる堅牢な AI エージェントを Python で作成する方法を解説します。
 
-- [What Is OpenAI Agents SDK?](#what-is-openai-agents-sdk)
-- [Major Challenges with This AI Agent Approach](#major-challenges-with-this-ai-agent-approach)
-- [Integrating Agents SDK with a Web Unlocker API](#integrating-agents-sdk-with-a-web-unlocker-api)
-  - [Step #1: Project Setup](#step-1-project-setup)
-  - [Step #2: Install the Project's Dependencies and Get Started](#step-2-install-the-projects-dependencies-and-get-started)
-  - [Step #3: Set Up Environment Variables Reading](#step-3-set-up-environment-variables-reading)
-  - [Step #4: Set Up OpenAI Agents SDK](#step-4-set-up-openai-agents-sdk)
-  - [Step #5: Set Up Web Unlocker API](#step-5-set-up-web-unlocker-api)
-  - [Step #6: Create the Web Page Content Extraction Function](#step-6-create-the-web-page-content-extraction-function)
-  - [Step #7: Define the Data Models](#step-7-define-the-data-models)
-  - [Step #8: Initialize the Agent logic](#step-8-initialize-the-agent-logic)
-  - [Step #9: Implement the Execution Loop](#step-9-implement-the-execution-loop)
-  - [Step #10: Put It All Together](#step-10-put-it-all-together)
-  - [Step #11: Test the AI Agent](#step-11-test-the-ai-agent)
+- [OpenAI Agents SDK とは？](#what-is-openai-agents-sdk)
+- [この AI エージェント手法における主な課題](#major-challenges-with-this-ai-agent-approach)
+- [Agents SDK を Web Unlocker API と統合する](#integrating-agents-sdk-with-a-web-unlocker-api)
+  - [ステップ #1: プロジェクトのセットアップ](#step-1-project-setup)
+  - [ステップ #2: プロジェクトの依存関係をインストールして開始する](#step-2-install-the-projects-dependencies-and-get-started)
+  - [ステップ #3: 環境変数の読み込みを設定する](#step-3-set-up-environment-variables-reading)
+  - [ステップ #4: OpenAI Agents SDK を設定する](#step-4-set-up-openai-agents-sdk)
+  - [ステップ #5: Web Unlocker API を設定する](#step-5-set-up-web-unlocker-api)
+  - [ステップ #6: Webページのコンテンツ抽出関数を作成する](#step-6-create-the-web-page-content-extraction-function)
+  - [ステップ #7: データモデルを定義する](#step-7-define-the-data-models)
+  - [ステップ #8: エージェントのロジックを初期化する](#step-8-initialize-the-agent-logic)
+  - [ステップ #9: 実行ループを実装する](#step-9-implement-the-execution-loop)
+  - [ステップ #10: すべてを統合する](#step-10-put-it-all-together)
+  - [ステップ #11: AI エージェントをテストする](#step-11-test-the-ai-agent)
 
-## What Is OpenAI Agents SDK?
+## OpenAI Agents SDK とは？
 
-The [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) is an open-source Python library created by OpenAI. It enables developers to build agent-based AI applications in a straightforward, efficient, and production-ready manner. This library represents a refined version of OpenAI's earlier experimental project called [Swarm](https://github.com/openai/swarm).
+[OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) は、OpenAI によって作成されたオープンソースの Python ライブラリです。エージェントベースの AI アプリケーションを、分かりやすく効率的で、本番運用に耐える形で構築できるようにします。このライブラリは、OpenAI の以前の実験的プロジェクトである [Swarm](https://github.com/openai/swarm) を洗練させたバージョンです。
 
-The OpenAI Agents SDK provides several essential components with minimal abstraction:
+OpenAI Agents SDK は、抽象化を最小限に抑えつつ、いくつかの重要なコンポーネントを提供します。
 
-- **Agents**: LLMs coupled with specific instructions and tools to execute tasks
-- **Handoffs**: Enabling agents to transfer tasks to other agents when necessary
-- **Guardrails**: To verify agent inputs to ensure they conform to expected formats or requirements
+- **Agents**: 特定の指示とツールを組み合わせてタスクを実行する LLM
+- **Handoffs**: 必要に応じてエージェントが他のエージェントへタスクを引き継げるようにする仕組み
+- **Guardrails**: エージェントの入力が期待される形式や要件に適合することを確認するための仕組み
 
-These core elements, combined with Python's versatility, facilitate the creation of sophisticated interactions between agents and tools.
+これらの中核要素と Python の汎用性を組み合わせることで、エージェントとツール間の高度な相互作用を作成しやすくなります。
 
-The SDK also features built-in tracing capabilities, allowing you to visualize, troubleshoot, and assess your agent workflows. It even supports model fine-tuning for your particular use cases.
+また SDK にはトレーシング機能が組み込まれており、エージェントのワークフローを可視化し、トラブルシューティングし、評価できます。特定のユースケース向けのモデルのファインチューニングもサポートしています。
 
-## Major Challenges with This AI Agent Approach
+## この AI エージェント手法における主な課題
 
-Most AI agents aim to automate operations on web pages, whether extracting content or interacting with page elements. Essentially, they need to programmatically navigate the Web.
+多くの AI エージェントは、コンテンツの抽出やページ要素との相互作用など、Webページ上の操作を自動化することを目的としています。つまり、本質的には Web をプログラムでナビゲートする必要があります。
 
-Beyond potential misinterpretations from the AI model itself, the most significant [obstacle these agents encounter](https://brightdata.com/blog/web-data/anti-scraping-techniques) is dealing with websites' defensive mechanisms. This occurs because many sites implement anti-bot and anti-scraping technologies that can restrict or misdirect AI agents. This is particularly relevant today, as [anti-AI CAPTCHAs and sophisticated bot detection systems become increasingly prevalent](https://hackernoon.com/ai-agent-browsers-are-failing-and-its-not-just-because-of-captchas).
+AI モデル自体による誤解釈の可能性に加えて、これらのエージェントが直面する最も重要な[障害](https://brightdata.jp/blog/web-data/anti-scraping-techniques)は、Webサイトの防御メカニズムへの対処です。多くのサイトがアンチボットやアンチスクレイピング技術を実装しており、AI エージェントを制限したり、誤った方向へ誘導したりする可能性があるためです。これは特に現在、[アンチ AI CAPTCHA や高度なボット検知システムがますます一般化している](https://hackernoon.com/ai-agent-browsers-are-failing-and-its-not-just-because-of-captchas)ことから、非常に重要です。
 
-To overcome these obstacles, you need to enhance your agent's web navigation capabilities by integrating it with a solution like [Bright Data's Web Unlocker API](https://brightdata.com/products/web-unlocker). This tool works with any HTTP client or solution that connects to the Internet (including AI agents), serving as a web-unlocking gateway. It provides clean, unblocked HTML from any webpage. No more CAPTCHAs, IP restrictions, or inaccessible content.
+これらの障害を克服するには、[Bright Data's Web Unlocker API](https://brightdata.jp/products/web-unlocker) のようなソリューションと統合して、エージェントの Web ナビゲーション能力を強化する必要があります。このツールは、インターネットに接続する任意の HTTP クライアントやソリューション（AI エージェントを含む）で利用でき、Webアンロック用のゲートウェイとして機能します。任意のWebページから、クリーンでブロックされていない HTML を提供します。CAPTCHA、IP 制限、アクセス不能なコンテンツに悩まされることはありません。
 
-## Integrating Agents SDK with a Web Unlocker API
+## Agents SDK を Web Unlocker API と統合する
 
-In this guided section, you'll discover how to integrate the OpenAI Agents SDK with Bright Data's Web Unlocker API to construct an AI agent capable of:
+このガイド付きセクションでは、OpenAI Agents SDK と Bright Data's Web Unlocker API を統合し、次のことができる AI エージェントを構築する方法を学びます。
 
-1. Creating summaries of text from any web page
-2. Obtaining structured product information from e-commerce websites
-3. Collecting key details from news articles
+1. 任意のWebページのテキストから要約を作成する
+2. eコマースサイトから構造化された商品情報を取得する
+3. ニュース記事から重要な詳細を収集する
 
-To accomplish this, the agent will instruct the OpenAI Agents SDK to utilize the Web Unlocker API as a mechanism for obtaining the content of any web page. Once the content is acquired, the agent will apply AI logic to extract and format the data as required for each task.
+これを実現するために、エージェントは OpenAI Agents SDK に対して、任意のWebページのコンテンツを取得する仕組みとして Web Unlocker API を利用するよう指示します。コンテンツを取得したら、エージェントは AI ロジックを適用し、各タスクで必要な形にデータを抽出・整形します。
 
-> **Disclaimer**:
+> **免責事項**:
 > 
-> The three use cases mentioned above are merely examples. The methodology presented here can be extended to numerous other scenarios by customizing the agent's behavior.
+> 上記の3つのユースケースは単なる例です。ここで提示する方法論は、エージェントの挙動をカスタマイズすることで、他の多数のシナリオにも拡張できます。
 
-Follow these instructions to develop an AI scraping agent in Python using the OpenAI Agents SDK and Bright Data's Web Unlocker API for optimal performance.
+最適なパフォーマンスを得るために、OpenAI Agents SDK と Bright Data's Web Unlocker API を使用して Python で AI スクレイピングエージェントを開発するには、次の手順に従ってください。
 
-### Prerequisites
+### 前提条件
 
-Before starting this tutorial, ensure you have the following:
+このチュートリアルを開始する前に、以下を用意してください。
 
-- Python 3 or higher installed on your computer
-- An active Bright Data account
-- An active OpenAI account
-- A fundamental understanding of HTTP requests
-- Some familiarity with Pydantic models
-- A general understanding of AI agent functionality
+- コンピュータに Python 3 以上がインストールされていること
+- 有効な Bright Data アカウント
+- 有効な OpenAI アカウント
+- HTTP リクエストに関する基礎理解
+- Pydantic モデルに関する基本的な知識
+- AI エージェントの動作に関する一般的な理解
 
-### Step #1: Project Setup
+### ステップ #1: プロジェクトのセットアップ
 
-First, verify that Python 3 is installed on your system. If not, [download Python](https://www.python.org/downloads/) and follow the installation instructions for your operating system.
+まず、システムに Python 3 がインストールされていることを確認してください。インストールされていない場合は、[Python をダウンロード](https://www.python.org/downloads/)して、お使いの OS に応じたインストール手順に従ってください。
 
-Launch your terminal and create a new directory for your scraping agent project:
+ターミナルを起動し、スクレイピングエージェントプロジェクト用の新しいディレクトリを作成します。
 
 ```sh
 mkdir openai-sdk-agent
 ```
 
-The `openai-sdk-agent` directory will house all the code for your Python-based, Agents SDK-powered agent.
+`openai-sdk-agent` ディレクトリには、Python ベースで Agents SDK を利用するエージェントのすべてのコードが配置されます。
 
-Move into the project directory and establish a [virtual environment](https://docs.python.org/3/library/venv.html):
+プロジェクトディレクトリに移動し、[仮想環境](https://docs.python.org/3/library/venv.html)を作成します。
 
 ```sh
 cd openai-sdk-agent
 python -m venv venv
 ```
 
-Open the project directory in your preferred Python IDE. [Visual Studio Code with the Python extension](https://code.visualstudio.com/docs/languages/python) or [PyCharm Community Edition](https://www.jetbrains.com/pycharm/download/#section=windows) are excellent options.
+お好みの Python IDE でプロジェクトディレクトリを開きます。[Python 拡張機能付き Visual Studio Code](https://code.visualstudio.com/docs/languages/python)や[PyCharm Community Edition](https://www.jetbrains.com/pycharm/download/#section=windows)が優れた選択肢です。
 
-Within the `openai-sdk-agent` directory, create a new Python file named `agent.py`. Your directory structure should now appear as follows:
+`openai-sdk-agent` ディレクトリ内に、`agent.py` という名前の新しい Python ファイルを作成します。ディレクトリ構成は次のようになります。
 
 ![The file structure of the AI agent project](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-file-structure-of-the-AI-agent-project.png)
 
-Currently, `scraper.py` is an empty Python script, but it will soon contain the desired AI agent logic.
+現時点では `scraper.py` は空の Python スクリプトですが、まもなく必要な AI エージェントロジックが含まれるようになります。
 
-In the IDE's terminal, activate the virtual environment. For Linux or macOS, execute this command:
+IDE のターミナルで仮想環境を有効化します。Linux または macOS では次のコマンドを実行します。
 
 ```sh
 ./env/bin/activate
 ```
 
-Similarly, on Windows, run:
+同様に Windows では次を実行します。
 
 ```powershell
 env/Scripts/activate
 ```
 
-### Step #2: Install the Project's Dependencies and Get Started
+### ステップ #2: プロジェクトの依存関係をインストールして開始する
 
-This project utilizes the following Python libraries:
+本プロジェクトでは、以下の Python ライブラリを使用します。
 
-- [`openai-agents`](https://openai.github.io/openai-agents-python/): The OpenAI Agents SDK, used for creating AI agents in Python.
-- [`requests`](https://requests.readthedocs.io/en/latest/): For connecting to Bright Data's Web Unlocker API and retrieving the HTML content of a web page for the AI agent to process. Learn more in our guide on [mastering the Python Requests library](https://brightdata.com/blog/web-data/python-requests-guide).
-- [`pydantic`](https://docs.pydantic.dev/latest/): For defining structured output models, allowing the agent to return data in a clear and validated format.
-- [`markdownify`](https://python.langchain.com/docs/integrations/document_transformers/markdownify/): For converting raw HTML content into clean Markdown. (We'll explain the benefits of this shortly.)
-- [`python-dotenv`](https://github.com/theskumar/python-dotenv): For loading environment variables from a `.env` file. This is where we'll store credentials for OpenAI and Bright Data.
+- [`openai-agents`](https://openai.github.io/openai-agents-python/): OpenAI Agents SDK。Python で AI エージェントを作成するために使用します。
+- [`requests`](https://requests.readthedocs.io/en/latest/): Bright Data's Web Unlocker API に接続し、AI エージェントが処理するためのWebページの HTML コンテンツを取得するために使用します。詳しくは、[Python Requests ライブラリを使いこなす](https://brightdata.jp/blog/web-data/python-requests-guide)ガイドをご覧ください。
+- [`pydantic`](https://docs.pydantic.dev/latest/): 構造化された出力モデルを定義し、エージェントが明確で検証された形式でデータを返せるようにします。
+- [`markdownify`](https://python.langchain.com/docs/integrations/document_transformers/markdownify/): 生の HTML コンテンツをクリーンな Markdown に変換するために使用します。（この利点は後ほど説明します。）
+- [`python-dotenv`](https://github.com/theskumar/python-dotenv): `.env` ファイルから環境変数を読み込むために使用します。ここに OpenAI と Bright Data の認証情報を保存します。
 
-In an activated virtual environment, install them all with:
+有効化された仮想環境で、次のコマンドですべてインストールします。
 
 ```sh
 pip install requests pydantic openai-agents openai-agents markdownify python-dotenv
 ```
 
-Now, set up `scraper.py` with these imports and async boilerplate code:
+次に、`scraper.py` を以下の import と async のボイラープレートコードでセットアップします。
 
 ```python
 import asyncio
@@ -142,89 +142,89 @@ if __name__ == "__main__":
     asyncio.run(run())
 ```
 
-### Step #3: Set Up Environment Variables Reading
+### ステップ #3: 環境変数の読み込みを設定する
 
-Create a `.env` file in your project directory:
+プロジェクトディレクトリに `.env` ファイルを作成します。
 
 ![Adding a .env file to your project](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Adding-a-.env-file-to-your-project.png)
 
-This file will store your environment variables, such as API keys and secret tokens. To load the environment variables from the `.env` file, use `load_dotenv()` from the `dotenv` package:
+このファイルには、API キーやシークレットトークンなどの環境変数を保存します。`.env` ファイルから環境変数を読み込むには、`dotenv` パッケージの `load_dotenv()` を使用します。
 
 ```python
 load_dotenv()
 ```
 
-You can now access specific environment variables using [`os.getenv()`](https://docs.python.org/3/library/os.html#os.getenv) like this:
+これで、[`os.getenv()`](https://docs.python.org/3/library/os.html#os.getenv) を使って特定の環境変数にアクセスできます。
 
 ```python
 os.getenv("ENV_NAME")
 ```
 
-Remember to import [`os`](https://docs.python.org/3/library/os.html) from the Python standard library:
+Python 標準ライブラリの [`os`](https://docs.python.org/3/library/os.html) を import することを忘れないでください。
 
 ```python
 import os
 ```
 
-### Step #4: Set Up OpenAI Agents SDK
+### ステップ #4: OpenAI Agents SDK を設定する
 
-You need a valid OpenAI API key to use the OpenAI Agents SDK. If you haven't generated one yet, follow [OpenAI's official guide](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key) to create your API key.
+OpenAI Agents SDK を使用するには、有効な OpenAI API key が必要です。まだ生成していない場合は、[OpenAI の公式ガイド](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)に従って API key を作成してください。
 
-After obtaining it, add the key to your `.env` file like this:
+取得したら、`.env` ファイルに次のように追加します。
 
 ```python
 OPENAI_API_KEY="<YOUR_OPENAI_KEY>"
 ```
 
-Make sure to replace the `<YOUR_OPENAI_KEY>` placeholder with your actual key.
+`<YOUR_OPENAI_KEY>` プレースホルダーは、実際のキーに置き換えてください。
 
-No additional setup is necessary, as the `openai-agents` SDK is designed to automatically retrieve the API key from the `OPENAI_API_KEY` environment variable.
+追加のセットアップは不要です。`openai-agents` SDK は `OPENAI_API_KEY` 環境変数から API key を自動的に取得するよう設計されています。
 
-### Step #5: Set Up Web Unlocker API
+### ステップ #5: Web Unlocker API を設定する
 
-If you don't already have one, [create a Bright Data account](https://brightdata.com/?hs_signup=1). Otherwise, simply [log in.](https://brightdata.com/cp/start)
+まだお持ちでない場合は、[Bright Data アカウントを作成](https://brightdata.jp/?hs_signup=1)してください。すでにお持ちの場合は、[ログイン](https://brightdata.jp/cp/start)してください。
 
-Next, consult [Bright Data's official Web Unlocker documentation](https://docs.brightdata.com/scraping-automation/web-unlocker/quickstart) to obtain your API token. Alternatively, follow these steps.
+次に、API トークンを取得するために [Bright Data の公式 Web Unlocker ドキュメント](https://docs.brightdata.com/scraping-automation/web-unlocker/quickstart)を参照してください。もしくは、次の手順に従ってください。
 
-In your Bright Data "User Dashboard" page, select the "Get proxy products" option:
+Bright Data の「User Dashboard」ページで、「Get proxy products」オプションを選択します。
 
 ![Clicking the "Get proxy products" option](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Clicking-the-Get-proxy-products-option.png)
 
-In the products table, find the row labeled "unblocker" and click on it:
+製品テーブルで「unblocker」とラベル付けされた行を見つけ、クリックします。
 
 ![Clicking the "unblocker" row](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Clicking-the-unblocker-row.png)
 
-On the "unlocker" page, copy your API token using the clipboard icon:
+「unlocker」ページで、クリップボードアイコンを使って API トークンをコピーします。
 
 ![Copying the API token](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/Copying-the-API-token.png)
 
-Also, verify that the toggle in the top-right corner is switched to "On," indicating that the Web Unlocker product is active.
+また、右上のトグルが「On」になっていることを確認し、Web Unlocker 製品がアクティブであることを確認してください。
 
-Under the "Configuration" tab, make sure these options are enabled for optimal effectiveness:
+「Configuration」タブで、最適な効果のために次のオプションが有効になっていることを確認してください。
 
 - [Premium domains](https://docs.brightdata.com/scraping-automation/web-unlocker/configuration#premium-domains)
-- [CAPTCHA Solver](https://brightdata.com/products/web-unlocker/captcha-solver)
+- [CAPTCHA Solver](https://brightdata.jp/products/web-unlocker/captcha-solver)
 
 ![Making sure that the premium options for effectiveness are enabled](https://media.brightdata.com/2025/04/Making-sure-that-the-premium-options-for-effectiveness-are-enabled.png)
 
-In the `.env` file, add this environment variable:
+`.env` ファイルに次の環境変数を追加します。
 
 ```python
 BRIGHT_DATA_WEB_UNLOCKER_API_TOKEN="<YOUR_BRIGHT_DATA_WEB_UNLOCKER_API_TOKEN>"
 ```
 
-Replace the placeholder with your actual API token.
+プレースホルダーは実際の API トークンに置き換えてください。
 
-### Step #6: Create the Web Page Content Extraction Function
+### ステップ #6: Webページのコンテンツ抽出関数を作成する
 
-Create a `get_page_content()` function that:
+次の処理を行う `get_page_content()` 関数を作成します。
 
-1. Reads the `BRIGHT_DATA_WEB_UNLOCKER_API_TOKEN` environment variable
-2. Uses `requests` to [send a request to Bright Data's Web Unlocker API using the provided URL](https://docs.brightdata.com/scraping-automation/web-unlocker/send-your-first-request)
-3. Retrieves the raw HTML returned by the API
-4. Transforms the HTML to Markdown and returns it
+1. `BRIGHT_DATA_WEB_UNLOCKER_API_TOKEN` 環境変数を読み込む
+2. `requests` を使って[提供された URL を使用し Bright Data's Web Unlocker API にリクエストを送信する](https://docs.brightdata.com/scraping-automation/web-unlocker/send-your-first-request)
+3. API から返される生の HTML を取得する
+4. HTML を Markdown に変換して返す
 
-Implement the above logic as follows:
+上記のロジックを次のように実装します。
 
 ```python
 @function_tool
@@ -268,29 +268,29 @@ def get_page_content(url: str) -> str:
     return markdown_text
 ```
 
-**Note 1**: The function must be annotated with [`@function_tool`](https://openai.github.io/openai-agents-python/tools/). This special decorator informs the OpenAI Agents SDK that this function can be used as a tool by an agent to perform specific actions. In this case, the function serves as the "engine" the agent can utilize to retrieve the content of the web page it will process.
+**注 1**: 関数には [`@function_tool`](https://openai.github.io/openai-agents-python/tools/) で注釈を付ける必要があります。この特殊なデコレーターにより、OpenAI Agents SDK はこの関数を、エージェントが特定のアクションを実行するためのツールとして使用できることを認識します。このケースでは、この関数が、エージェントが処理するWebページのコンテンツを取得するために利用できる「エンジン」として機能します。
 
-**Note 2**: The `get_page_content()` function must explicitly declare the input types.  
-If you omit them, you'll encounter an error like: `Error getting response: Error code: 400 - {'error': {'message': "Invalid schema for function 'get_page_content': In context=('properties', 'url'), schema must have a 'type' key.``"`
+**注 2**: `get_page_content()` 関数は入力型を明示的に宣言する必要があります。  
+省略すると、次のようなエラーに遭遇します: `Error getting response: Error code: 400 - {'error': {'message': "Invalid schema for function 'get_page_content': In context=('properties', 'url'), schema must have a 'type' key.``"`
 
-Converting raw HTML to Markdown improves performance efficiency and cost-effectiveness because HTML is highly verbose and often contains unnecessary elements like scripts, styles, and metadata. AI agents don't need this content. If your agent only requires the essentials like text, links, and images, Markdown provides a much cleaner and more compact representation.
+生の HTML を Markdown に変換すると、パフォーマンス効率と費用対効果が向上します。これは HTML が非常に冗長で、スクリプト、スタイル、メタデータといった不要な要素を含むことが多いためです。AI エージェントはこれらのコンテンツを必要としません。エージェントがテキスト、リンク、画像などの要点のみを必要とする場合、Markdown ははるかにクリーンでコンパクトな表現を提供します。
 
-Specifically, the HTML-to-Markdown transformation can reduce the input size by up to 99%, saving both:
+具体的には、HTML-to-Markdown 変換により入力サイズを最大 99% 削減でき、次の両方を節約できます。
 
-- Tokens, which reduces costs when using OpenAI models
-- Processing time, since models operate faster on smaller inputs
+- トークン数（OpenAI モデル利用時のコスト削減）
+- 処理時間（モデルは入力が小さいほど高速に動作します）
 
-For more insights, read the article "[Why Are the New AI Agents Choosing Markdown Over HTML?](https://hackernoon.com/why-are-the-new-ai-agents-choosing-markdown-over-html)"
+詳しくは、「[Why Are the New AI Agents Choosing Markdown Over HTML?](https://hackernoon.com/why-are-the-new-ai-agents-choosing-markdown-over-html)」の記事をご覧ください。
 
-### Step #7: Define the Data Models
+### ステップ #7: データモデルを定義する
 
-For proper operation, OpenAI SDK agents require Pydantic models to define the expected structure of their output data. Remember that the agent we're building can return one of three possible outputs:
+正しく動作するために、OpenAI SDK のエージェントは、出力データの期待される構造を定義するための Pydantic モデルを必要とします。ここで構築するエージェントは、次の3つのいずれかの出力を返すことを思い出してください。
 
-1.  A summary of the page
-2.  Product information
-3.  News article information
+1.  ページの要約
+2.  商品情報
+3.  ニュース記事情報
 
-Let's define three corresponding [Pydantic models](https://docs.pydantic.dev/latest/concepts/models/):
+対応する3つの [Pydantic モデル](https://docs.pydantic.dev/latest/concepts/models/)を定義しましょう。
 
 ```python
 class Summary(BaseModel):
@@ -311,17 +311,17 @@ class News(BaseModel):
     publication_date: Optional[str] = None
 ```
 
-**Note**: Using `Optional` makes your agent more versatile and general-purpose. Not all pages will include every piece of data defined in the schema, so this flexibility helps prevent errors when fields are missing.
+**注**: `Optional` を使用すると、エージェントをより汎用的で多用途にできます。すべてのページがスキーマで定義された全データを含むわけではないため、この柔軟性はフィールドが欠けている場合のエラーを防ぐのに役立ちます。
 
-Don't forget to import `Optional` and `List` from [`typing`](https://docs.python.org/3/library/typing.html):
+[`typing`](https://docs.python.org/3/library/typing.html) から `Optional` と `List` を import することを忘れないでください。
 
 ```python
 from typing import Optional, List
 ```
 
-### Step #8: Initialize the Agent logic
+### ステップ #8: エージェントのロジックを初期化する
 
-Use the [`Agent`](https://platform.openai.com/docs/guides/agents) class from the `openai-agents` SDK to define the three specialized agents:
+`openai-agents` SDK の [`Agent`](https://platform.openai.com/docs/guides/agents) クラスを使用して、3つの特化エージェントを定義します。
 
 ```python
 summarization_agent = Agent(
@@ -346,13 +346,13 @@ news_info_agent = Agent(
 )
 ```
 
-Each agent:
+各エージェントは次の特徴を持ちます。
 
-1. Contains a clear instruction string that describes its intended function. The OpenAI Agents SDK uses this to guide the agent's behavior.
-2. Uses `get_page_content()` as a tool to retrieve the input data (i.e., the content of the web page).
-3. Returns its output in one of the Pydantic models (`Summary`, `Product`, or `News`) defined earlier.
+1. 意図する機能を説明する明確な instruction 文字列を含みます。OpenAI Agents SDK はこれを使用してエージェントの挙動を誘導します。
+2. 入力データ（つまりWebページのコンテンツ）を取得するツールとして `get_page_content()` を使用します。
+3. 先ほど定義した Pydantic モデル（`Summary`、`Product`、`News`）のいずれかで出力を返します。
 
-To automatically direct user requests to the appropriate specialized agent, define a higher-level agent:
+ユーザーのリクエストを適切な特化エージェントへ自動的に振り分けるために、上位レベルのエージェントを定義します。
 
 ```python
 routing_agent = Agent(
@@ -365,11 +365,11 @@ routing_agent = Agent(
 ) 
 ```
 
-This is the agent you'll query in your `run()` function to drive the AI agent logic.
+これが `run()` 関数内で問い合わせて AI エージェントロジックを駆動するエージェントです。
 
-### Step #9: Implement the Execution Loop
+### ステップ #9: 実行ループを実装する
 
-In the `run()` function, add this loop to launch your AI agent logic:
+`run()` 関数に次のループを追加して、AI エージェントロジックを起動します。
 
 ```python
 # Keep iterating until the use type "exit"
@@ -390,15 +390,15 @@ while True:
     print(f"Output -> \n{json_output}\n\n")
 ```
 
-This loop continuously monitors for user input and processes each request by routing it to the appropriate agent (summary, product, or news). It combines the user's query with the target URL, executes the logic, and then displays the structured result in JSON format using [`json`](https://docs.python.org/3/library/json.html). Import it with:
+このループは継続的にユーザー入力を監視し、各リクエストを適切なエージェント（summary、product、news）にルーティングして処理します。ユーザーのクエリと対象 URL を結合してロジックを実行し、[`json`](https://docs.python.org/3/library/json.html) を使用して構造化された結果を JSON 形式で表示します。次のように import してください。
 
 ```python
 import json
 ```
 
-### Step #10: Put It All Together
+### ステップ #10: すべてを統合する
 
-Your `scraper.py` file should now contain:
+これで `scraper.py` ファイルには次の内容が含まれているはずです。
 
 ```python
 import asyncio
@@ -527,31 +527,31 @@ if __name__ == "__main__":
     asyncio.run(run())
 ```
 
-### Step #11: Test the AI Agent
+### ステップ #11: AI エージェントをテストする
 
-To launch your AI agent, execute:
+AI エージェントを起動するには、次を実行します。
 
 ```sh
 python agent.py
 ```
 
-Let's say you want to summarize the content from [Bright Data's AI services hub](https://brightdata.com/ai). Simply enter a request like this:
+例えば、[Bright Data の AI services hub](https://brightdata.jp/ai) のコンテンツを要約したいとします。次のようにリクエストを入力してください。
 
 ![The input to get a summary of Bright Data's AI services](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-input-to-get-a-summary-of-Bright-Datas-AI-services.png)
 
-Here's the JSON-formatted result you'll receive:
+受け取る JSON 形式の結果は次のとおりです。
 
 ![The summary returned by your AI agent](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-summary-returned-by-your-AI-agent.png)
 
-Now, imagine you want to extract product data from an Amazon product page, such as the [PS5 listing](https://www.amazon.com/PlayStation%C2%AE5-console-slim-PlayStation-5/dp/B0CL61F39H/):
+次に、[PS5 listing](https://www.amazon.com/PlayStation%C2%AE5-console-slim-PlayStation-5/dp/B0CL61F39H/) のような Amazon の商品ページから商品データを抽出したいと想像してください。
 
 ![The Amazon PS5 page](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-Amazon-PS5-page.png)
 
-Typically, [Amazon's CAPTCHA and anti-bot systems](https://brightdata.com/blog/web-data/bypass-amazon-captcha) would block your request. With the Web Unlocker API, your AI agent can access and analyze the page without being blocked:
+通常であれば、[Amazon の CAPTCHA とアンチボットシステム](https://brightdata.jp/blog/web-data/bypass-amazon-captcha) によってリクエストがブロックされるはずです。Web Unlocker API を使えば、AI エージェントはブロックされることなくページにアクセスして解析できます。
 
 ![Getting Amazon product data](https://media.brightdata.com/2025/04/Getting-Amazon-product-data.gif)
 
-The output will be:
+出力は次のようになります。
 
 ```json
 {
@@ -563,18 +563,18 @@ The output will be:
 }
 ```
 
-Finally, suppose you want to get structured news information from [a Yahoo News article](https://www.yahoo.com/news/pope-francis-dies-88-080859417.html):
+最後に、[Yahoo News の記事](https://www.yahoo.com/news/pope-francis-dies-88-080859417.html) から構造化されたニュース情報を取得したいとします。
 
 ![The target Yahoo News article](https://github.com/luminati-io/openai-sdk-with-web-unlocker/blob/main/images/The-target-Yahoo-News-article.png)
 
-Accomplish this with the following input:
+次の入力で実行できます。
 
 ```
 Your request -> Give me news info
 Page URL -> https://www.yahoo.com/news/pope-francis-dies-88-080859417.html
 ```
 
-The result will be:
+結果は次のようになります。
 
 ```json
 {
@@ -589,10 +589,10 @@ The result will be:
 }
 ```
 
-## Conclusion
+## 結論
 
-Combining the OpenAI SDK with Bright Data's [Web Unlocker API](https://brightdata.com/products/web-unlocker) enables you to develop AI agents that can reliably operate on virtually any web page. This is just one example of how Bright Data's products and services can support advanced AI integrations.
+OpenAI SDK と Bright Data's [Web Unlocker API](https://brightdata.jp/products/web-unlocker) を組み合わせることで、ほぼあらゆるWebページ上で信頼性高く動作できる AI エージェントを開発できます。これは、Bright Data の製品とサービスが高度な AI 統合をどのように支援できるかを示す一例に過ぎません。
 
-Explore our complete range of [AI products](https://brightdata.com/ai/products-for-ai): autonomous AI agents, vertical AI apps, foundation models, multimodal AI, data providers, data packages, and more.
+自律型 AI エージェント、垂直型 AI アプリ、基盤モデル、マルチモーダル AI、データプロバイダー、データパッケージなどを含む、[AI 製品](https://brightdata.jp/ai/products-for-ai)の全ラインナップをご覧ください。
 
-Create a Bright Data account and try all our products and services for AI agent development today!
+Bright Data アカウントを作成し、AI エージェント開発向けの当社製品・サービスを今すぐお試しください！
